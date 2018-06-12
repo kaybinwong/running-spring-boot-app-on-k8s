@@ -1,0 +1,329 @@
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whimsical-sheep-registry-service-helm-config-0
+  labels:
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+data:
+  application.yaml: |+
+    server:
+      port: 8761
+    spring:
+      application:
+        name: eureka-server
+    eureka:
+      instance:
+        hostname: localhost
+        preferIpAddress: true
+      client:
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+          defaultZone: http://whimsical-sheep-registry-service-helm-headless-svc-1.default.svc.cluster.local:8761/eureka
+      server:
+        waitTimeInMsWhenSyncEmpty: 0
+    management:
+      endpoints:
+        web:
+          base-path: "/management"
+          exposure:
+            include: "*"
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whimsical-sheep-registry-service-helm-config-1
+  labels:
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+data:
+  application.yaml: |+
+    server:
+      port: 8761
+    spring:
+      application:
+        name: eureka-server
+    eureka:
+      instance:
+        hostname: localhost
+        preferIpAddress: true
+      client:
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+          defaultZone: http://whimsical-sheep-registry-service-helm-headless-svc-2.default.svc.cluster.local:8761/eureka
+      server:
+        waitTimeInMsWhenSyncEmpty: 0
+    management:
+      endpoints:
+        web:
+          base-path: "/management"
+          exposure:
+            include: "*"
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: whimsical-sheep-registry-service-helm-config-2
+  labels:
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+data:
+  application.yaml: |+
+    server:
+      port: 8761
+    spring:
+      application:
+        name: eureka-server
+    eureka:
+      instance:
+        hostname: localhost
+        preferIpAddress: true
+      client:
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+          defaultZone: http://whimsical-sheep-registry-service-helm-headless-svc-0.default.svc.cluster.local:8761/eureka
+      server:
+        waitTimeInMsWhenSyncEmpty: 0
+    management:
+      endpoints:
+        web:
+          base-path: "/management"
+          exposure:
+            include: "*"
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: whimsical-sheep-registry-service-helm-svc-0
+  labels:
+    app: eureka-headless-svc
+spec:
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: 
+  type: ClusterIP
+  selector:
+    appInstance: whimsical-sheep-registry-service-helm-0
+    release: whimsical-sheep
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: whimsical-sheep-registry-service-helm-svc-2
+  labels:
+    app: eureka-headless-svc
+spec:
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: 
+  type: ClusterIP
+  selector:
+    appInstance: whimsical-sheep-registry-service-helm-2
+    release: whimsical-sheep
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: whimsical-sheep-registry-service-helm-svc-1
+  labels:
+    app: eureka-headless-svc
+spec:
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: 
+  type: ClusterIP
+  selector:
+    appInstance: whimsical-sheep-registry-service-helm-1
+    release: whimsical-sheep
+---
+# Source: registry-service-helm/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: whimsical-sheep-registry-service-helm-svc
+  labels:
+    app: registry-service-helm
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+spec:
+  type: NodePort
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: eureka-listening-port
+  selector:
+    app: whimsical-sheep-registry-service-helm
+    release: whimsical-sheep
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: whimsical-sheep-registry-service-helm-2
+  labels:
+    app: whimsical-sheep-registry-service-helm
+    appInstance: whimsical-sheep-registry-service-helm-2
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appInstance: whimsical-sheep-registry-service-helm-2
+  template:
+    metadata:
+      labels:
+        app: whimsical-sheep-registry-service-helm
+        appInstance: whimsical-sheep-registry-service-helm-2
+        release: whimsical-sheep
+    spec:
+      containers:
+        - name: registry-service-helm
+          image: "registry.cn-hangzhou.aliyuncs.com/aliacs-app-catalog/eureka:1.5.13.RELEASE"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8761
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 1
+          volumeMounts:
+          - name: eureka-server-config
+            mountPath: /config
+      volumes:
+        - name: eureka-server-config
+          configMap:
+            name: whimsical-sheep-registry-service-helm-config-2
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: whimsical-sheep-registry-service-helm-0
+  labels:
+    app: whimsical-sheep-registry-service-helm
+    appInstance: whimsical-sheep-registry-service-helm-0
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appInstance: whimsical-sheep-registry-service-helm-0
+  template:
+    metadata:
+      labels:
+        app: whimsical-sheep-registry-service-helm
+        appInstance: whimsical-sheep-registry-service-helm-0
+        release: whimsical-sheep
+    spec:
+      containers:
+        - name: registry-service-helm
+          image: "registry.cn-hangzhou.aliyuncs.com/aliacs-app-catalog/eureka:1.5.13.RELEASE"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8761
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 1
+          volumeMounts:
+          - name: eureka-server-config
+            mountPath: /config
+      volumes:
+        - name: eureka-server-config
+          configMap:
+            name: whimsical-sheep-registry-service-helm-config-0
+---
+# Source: registry-service-helm/templates/deployment.yaml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: whimsical-sheep-registry-service-helm-1
+  labels:
+    app: whimsical-sheep-registry-service-helm
+    appInstance: whimsical-sheep-registry-service-helm-1
+    chart: registry-service-helm-0.1.0
+    release: whimsical-sheep
+    heritage: Tiller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appInstance: whimsical-sheep-registry-service-helm-1
+  template:
+    metadata:
+      labels:
+        app: whimsical-sheep-registry-service-helm
+        appInstance: whimsical-sheep-registry-service-helm-1
+        release: whimsical-sheep
+    spec:
+      containers:
+        - name: registry-service-helm
+          image: "registry.cn-hangzhou.aliyuncs.com/aliacs-app-catalog/eureka:1.5.13.RELEASE"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8761
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 1
+          volumeMounts:
+          - name: eureka-server-config
+            mountPath: /config
+      volumes:
+        - name: eureka-server-config
+          configMap:
+            name: whimsical-sheep-registry-service-helm-config

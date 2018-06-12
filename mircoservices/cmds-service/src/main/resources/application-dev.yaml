@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    initialization-mode: ALWAYS
+    url: jdbc:hsqldb:file:target/cmds
+    username: sa
+    password:
+    data: classpath*:data.sql
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

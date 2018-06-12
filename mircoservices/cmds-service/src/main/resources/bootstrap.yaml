@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: cmds-service
+server:
+  port: 0

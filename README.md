@@ -1,0 +1,1 @@
+running spring boot app on k8s.
