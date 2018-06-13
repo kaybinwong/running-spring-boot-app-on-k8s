@@ -1,5 +1,10 @@
 spring:
   application:
     name: passport-service
-server:
-  port: 0
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-service
+      profile: dev
+      label: master

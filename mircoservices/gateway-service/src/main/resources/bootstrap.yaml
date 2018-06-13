@@ -1,6 +1,6 @@
 spring:
   application:
-    name: cmds-service
+    name: gateway-service
   cloud:
     config:
       discovery:
