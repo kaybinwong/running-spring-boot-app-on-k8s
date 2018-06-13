@@ -1,5 +1,7 @@
+profile: "default"
+
 server:
-  port: 0
+  port: 30001
 
 eureka:
   client:
