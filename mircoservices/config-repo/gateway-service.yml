@@ -14,17 +14,17 @@ zuul:
       path: /passport/**
       serviceId: passport-service
 
-hystrix: #hystrix≈‰÷√
+hystrix:
   command:
     default:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 2500 
+            timeoutInMilliseconds: 2500
 
 ribbon:
-  ReadTimeout: 5000
-  ConnectTimeout: 5000
+  ReadTimeout: 2000
+  ConnectTimeout: 2000
 
 eureka:
   client:

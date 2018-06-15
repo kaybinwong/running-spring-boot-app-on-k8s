@@ -17,3 +17,7 @@ eureka:
     lease-renewal-interval-in-seconds: 30
     lease-expiration-duration-in-seconds: 10
     prefer-ip-address: false
+
+spring:
+  zipkin:
+    base-url: http://localhost:9411
