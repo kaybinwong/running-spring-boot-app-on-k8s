@@ -18,6 +18,12 @@ eureka:
     lease-expiration-duration-in-seconds: 10
     prefer-ip-address: false
 
+# 目前只有使用bus kafka，若是需要使用多个队列，可声明多个binder
 spring:
-  zipkin:
-    base-url: http://localhost:9411
+  cloud:
+    stream:
+      default-binder: kafka
+      kafka:
+        binder:
+          brokers: 192.168.64.134:9092
+          zk-nodes: 192.168.64.168:2181

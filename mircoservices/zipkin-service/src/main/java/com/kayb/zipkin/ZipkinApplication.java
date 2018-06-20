@@ -2,9 +2,11 @@ package com.kayb.zipkin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import zipkin.server.EnableZipkinServer;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.sleuth.zipkin.stream.EnableZipkinStreamServer;
 
-@EnableZipkinServer
+@EnableEurekaClient
+@EnableZipkinStreamServer
 @SpringBootApplication
 public class ZipkinApplication {
 

@@ -1,0 +1,28 @@
+---
+spring:
+  sleuth:
+    enabled: false
+    sampler:
+      percentage: 0.1
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 192.168.64.134:9092
+          zk-nodes: 192.168.64.168:2181
+
+server:
+  port: 9411
+
+zipkin:
+  storage:
+    elasticsearch:
+      cluster: elasticsearch
+      index-replicas: 1
+      passwoord: 123456
+      hosts: 192.168.64.134:9200
+      index: zipkin
+      index-shards: 1
+      username: elastic
+    type: elasticsearch
