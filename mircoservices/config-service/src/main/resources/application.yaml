@@ -1,16 +1,30 @@
+server:
+  port: 8088
+
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
 
 spring:
+  application:
+    name: config-service
+
   cloud:
+    config:
+      server:
+        git:
+          search-paths: mircoservices/config-repo
+          username:
+          password:
+          uri: https://github.com/kaybinwong/running-spring-boot-app-on-k8s
+
     stream:
       default-binder: kafka
       kafka:
         binder:
-          brokers: 192.168.64.134:9092
-          zk-nodes: 192.168.64.168:2181
+          brokers: ${KAFKA_BROKERS:localhost:9092}
+          zk-nodes: ${KAFKA_ZK_NODES:localhost:2181}
 
 management:
   endpoints:

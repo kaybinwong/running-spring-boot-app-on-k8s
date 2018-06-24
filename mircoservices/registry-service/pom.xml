@@ -18,6 +18,19 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <start-class>com.kayb.registry.Application</start-class>
+        <java.version>1.8</java.version>
+        <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
+        <!-- docker registry -->
+        <docker.registry>your-private-registry/inf</docker.registry>
+        <!-- insecurity, test only -->
+        <docker.host>http://192.168.64.75:2375</docker.host>
+        <!-- none utc time-->
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -53,32 +66,23 @@
         </dependencies>
     </dependencyManagement>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <start-class>com.kayb.registry.Application</start-class>
-        <java.version>1.8</java.version>
-        <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
-    </properties>
-
     <build>
+        
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>*.yaml</exclude>
+                    <exclude>*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- defined in spring-cloud-starter-parent pom (as documentation hint),
-                    but needs to be repeated here -->
-                <configuration>
-                    <requiresUnpack>
-                        <dependency>
-                            <groupId>com.netflix.eureka</groupId>
-                            <artifactId>eureka-core</artifactId>
-                        </dependency>
-                        <dependency>
-                            <groupId>com.netflix.eureka</groupId>
-                            <artifactId>eureka-client</artifactId>
-                        </dependency>
-                    </requiresUnpack>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>pl.project13.maven</groupId>
@@ -88,10 +92,35 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!--skip deploy (this is just a test module) -->
-                <artifactId>maven-deploy-plugin</artifactId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>docker:build</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete file="${project.basedir}/docker/app.jar"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.basedir}/docker/app.jar" overwrite="true"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.1.0</version>
                 <configuration>
-                    <skip>true</skip>
+                    <imageName>${docker.registry}/${project.name}-service</imageName>
+                    <imageTags>
+                        <imageTag>${maven.build.timestamp}</imageTag>
+                        <imageTag>latest</imageTag>
+                    </imageTags>
+                    <forceTags>true</forceTags>
+                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                    <dockerHost>${docker.host}</dockerHost>
                 </configuration>
             </plugin>
         </plugins>
