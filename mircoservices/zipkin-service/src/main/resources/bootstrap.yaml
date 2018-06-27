@@ -8,3 +8,11 @@ spring:
         service-id: config-service
       label: master
       profile: dev
+
+server:
+  port: 9411
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8762/eureka
