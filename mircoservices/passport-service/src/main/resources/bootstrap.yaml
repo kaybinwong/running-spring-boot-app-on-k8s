@@ -1,3 +1,5 @@
+
+
 spring:
   application:
     name: passport-service
@@ -13,3 +15,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8762/eureka
+
+server:
+  port: 0
