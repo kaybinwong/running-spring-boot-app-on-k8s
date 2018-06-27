@@ -11,3 +11,28 @@ spring:
   sleuth:
     sampler:
       probability: 1.0
+
+zuul: 
+  ignoredServices: '*'
+  host:
+    connect-timeout-millis: 20000
+    socket-timeout-millis: 20000
+  routes:
+    cmds-service:
+      path: /cmds/**
+      serviceId: cmds-service
+    passport-service:
+      path: /passport/**
+      serviceId: passport-service
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 2500
+
+ribbon:
+  ReadTimeout: 2000
+  ConnectTimeout: 2000
