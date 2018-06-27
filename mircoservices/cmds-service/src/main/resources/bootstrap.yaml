@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: cmds-service
@@ -8,3 +9,8 @@ spring:
         service-id: config-service
       label: master
       profile: dev
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8762/eureka/

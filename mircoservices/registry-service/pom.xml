@@ -20,11 +20,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <start-class>com.kayb.registry.Application</start-class>
+        <start-class>com.kayb.registry.RegistryApplication</start-class>
         <java.version>1.8</java.version>
         <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
         <!-- docker registry -->
-        <docker.registry>your-private-registry/inf</docker.registry>
+        <docker.registry>your-private-registry</docker.registry>
         <!-- insecurity, test only -->
         <docker.host>http://192.168.64.75:2375</docker.host>
         <!-- none utc time-->
@@ -67,7 +67,7 @@
     </dependencyManagement>
 
     <build>
-        
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

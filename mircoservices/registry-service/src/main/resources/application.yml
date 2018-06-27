@@ -1,29 +1,26 @@
 server:
-  port: ${SERVER_PORT:8761}
+  port: 8762
 
-eureka:
-  server:
-    enable-self-preservation: false
-    eviction-interval-timer-in-ms: 10000
-    wait-time-in-ms-when-sync-empty: 0
-  client:
-    enabled: true
-    register-with-eureka: false
-    fetch-registry: false
-    service-url:
-      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka/}
-
-  instance:
-    lease-renewal-interval-in-seconds: 30
-    lease-expiration-duration-in-seconds: 10
-    prefer-ip-address: false
+spring:
+  application:
+    name: service-registry
 
 # 目前只有使用bus kafka，若是需要使用多个队列，可声明多个binder
-spring:
   cloud:
     stream:
       default-binder: kafka
       kafka:
         binder:
-          brokers: 192.168.64.134:9092
-          zk-nodes: 192.168.64.168:2181
+          brokers: localhost:9092
+          zk-nodes: localhost:2181
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+    service-url:
+      defaultZone: http://127.0.0.1:8762/eureka
+  server:
+    wait-time-in-ms-when-sync-empty: 0
