@@ -1,0 +1,50 @@
+{{- $root := . -}}
+{{ $fullname := include "configserver.fullname" . }}
+{{ $name := include "configserver.name" . }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: config-server
+data:
+  bootstrap.yaml: |+
+    spring:
+      application:
+        name: config-service
+
+  application.yaml: |+
+    server:
+      port: {{ .Values.service.internalPort }}
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+          cors:
+            allowed-origins: "*"
+            allowed-methods: "*"
+    
+    spring:
+      cloud:
+        config:
+          server:
+            git:
+              uri: {{ .Values.spring.cloud.config.server.git.uri }}
+              search-paths: {{ .Values.spring.cloud.config.server.git.searchPaths }}
+              private-key: |-
+              {{ .Values.spring.cloud.config.server.git.privateKey | indent 2 | replace "\n" "\n              "}}
+              passphrase: {{ .Values.spring.cloud.config.server.git.passphrase }}
+              ignore-local-ssh-settings: true
+
+{{ template "kafkaConfig" . }}
+
+{{ template "eurekaConfig" . }}
+
+
+---

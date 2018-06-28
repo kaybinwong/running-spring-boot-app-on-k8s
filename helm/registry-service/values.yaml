@@ -1,0 +1,22 @@
+replicaCount: 3
+image:
+  repository: registry.seedland.cc/inf/registry-service
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  enabled: true
+  type: NodePort
+  externalPort: 8761
+  internalPort: 8761
+management:
+  endpointsEnabled: true
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 300
+  timeoutSeconds: 60
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 300
+  timeoutSeconds: 60

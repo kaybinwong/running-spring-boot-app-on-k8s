@@ -1,0 +1,81 @@
+{{- $root := . -}}
+{{ $fullname := include "passportservice.fullname" . }}
+{{ $name := include "passportservice.name" . }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.service.name }}
+data:
+  bootstrap.yaml: |+
+    spring:
+      application:
+        name: {{ .Values.service.name }}
+      cloud:
+        config:
+          discovery:
+            enabled: {{ default true .Values.discovery.enabled }}
+            service-id: {{ .Values.discovery.serviceId }}
+          profile: {{ .Values.profile }}
+          label:  {{ .Values.label }}
+{{ template "eurekaConfig" . }}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    k8s-app: passport-service
+spec:
+  replicas:  {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      labels:
+        k8s-app: passport-service
+    spec:
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: passport-service
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{ template "probeConfig" . }}
+        volumeMounts:
+        - mountPath: /config
+          name: config
+
+      volumes:
+      - name: config
+        configMap:
+          name: {{ $fullname }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    k8s-app: passport-service
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - name: http
+    port: {{ .Values.service.externalPort }}
+    targetPort: {{ .Values.service.internalPort }}
+    protocol: TCP
+  selector:
+    k8s-app: passport-service

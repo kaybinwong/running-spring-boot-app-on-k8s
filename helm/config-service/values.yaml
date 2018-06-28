@@ -1,0 +1,70 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 2
+image:
+  repository: registry.seedland.cc/inf/config-service
+  tag: latest
+  pullPolicy: Always
+
+service:
+  enabled: true
+  type: NodePort
+  externalPort: 8088
+  internalPort: 8088
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 300
+  timeoutSeconds: 60
+  successThreshold: 1
+  failureThreshold: 5
+
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 300
+  timeoutSeconds: 60
+  successThreshold: 1
+  failureThreshold: 5
+
+global:
+  kafka:
+    brokers: 
+    zkNodes: 
+  
+  eureka:
+    service:
+      name:
+      port:
+
+management:
+  contextPath: /admin
+  security:
+    enabled: false
+    role: 
+      
+security:
+  user:
+    name: 
+    password: 
+
+eureka:
+  client:
+    enabled: false
+    serviceUrl:
+      defaultZone: 
+
+spring:
+  cloud:
+    bus:
+      enabled: false
+    config:
+      server:
+        git:
+          uri: 
+          searchPaths: mircoservices/config-repo
+          private-key: 
+          passphrase: 
+
+
+bootstrap:
+  values: 

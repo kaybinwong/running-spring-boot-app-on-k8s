@@ -1,0 +1,36 @@
+{{- $root := . -}}
+{{ $fullname := include "configserver.fullname" . }}
+{{ $name := include "configserver.name" . }}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: config-server
+spec:
+  replicas:  {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      labels:
+        component: config-server
+    spec:
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: config-server
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{ template "probeConfig" . }}
+        volumeMounts:
+        - mountPath: /config
+          name: config-server-data
+      volumes:
+      - name: config-server-data
+        configMap:
+          name: {{ $fullname }}

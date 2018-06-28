@@ -1,0 +1,125 @@
+{{- $root := . -}}
+{{ $replicas := (int .Values.replicaCount) }}
+{{ $fullname := include "eureka.fullname" . }}
+{{ $name := include "eureka.name" . }}
+{{ range $i,$none := until $replicas }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}-svc-{{ $i }}
+  labels:
+    app: eureka-headless-svc
+spec:
+  ports:
+    - port: {{ $root.Values.service.externalPort }}
+      targetPort: {{ $root.Values.service.internalPort }}
+      protocol: TCP
+      name: {{ $root.Values.service.portName }}
+  type: ClusterIP
+  selector:
+    appInstance: {{ $fullname }}-{{ $i }}
+    release: {{ $root.Release.Name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $root.Release.Name }}-{{ $root.Chart.Name }}-config-{{ $i }}
+  labels:
+    chart: {{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}
+    release: {{ $root.Release.Name }}
+    heritage: {{ $root.Release.Service }}
+data:
+  application.yaml: |+
+    server:
+      port: {{ $root.Values.service.internalPort }}
+    spring:
+      application:
+        name: eureka-server
+    eureka:
+      instance:
+        hostname: localhost
+        preferIpAddress: true
+      client:
+        {{- if (gt $replicas 1) }}
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+          defaultZone: http://{{ $fullname }}-headless-svc-{{if eq $i (sub $replicas 1) }}0{{else}}{{ (add $i 1) }}{{end}}.default.svc.cluster.local:{{ $root.Values.service.internalPort }}/eureka
+        {{- else }}
+        registerWithEureka: false
+        fetchRegistry: false
+        {{- end }}
+      server:
+        waitTimeInMsWhenSyncEmpty: 0
+{{- if $root.Values.management.endpointsEnabled }}
+    management:
+      endpoints:
+        web:
+          base-path: "/management"
+          exposure:
+            include: "*"
+          cors:
+            allowed-origins: "*"
+            allowed-methods: "*"
+{{- end }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ $fullname }}-{{ $i }}
+  labels:
+    app: {{ $fullname }}
+    appInstance: {{ $fullname }}-{{ $i }}
+    chart: {{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}
+    release: {{ $root.Release.Name }}
+    heritage: {{ $root.Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appInstance: {{ $fullname }}-{{ $i }}
+  template:
+    metadata:
+      labels:
+        app: {{ $fullname }}
+        appInstance: {{ $fullname }}-{{ $i }}
+        release: {{ $root.Release.Name }}
+    spec:
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+        - name: {{ $root.Chart.Name }}
+          image: "{{ $root.Values.image.repository }}:{{ $root.Values.image.tag }}"
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $root.Values.service.internalPort }}
+          resources: 
+          limits:
+          - cpu: 500m
+            memory: 512Mi
+          requests:
+          - cpu: 250m
+            memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ $root.Values.service.internalPort }}
+            initialDelaySeconds: {{ $root.Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $root.Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ $root.Values.livenessProbe.timeoutSeconds }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ $root.Values.service.internalPort }}
+            initialDelaySeconds: {{ $root.Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $root.Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ $root.Values.readinessProbe.timeoutSeconds }}
+          volumeMounts:
+          - name: eureka-server-config
+            mountPath: /config
+      volumes:
+        - name: eureka-server-config
+          configMap:
+            name: {{ $root.Release.Name }}-{{ $root.Chart.Name }}-config-{{ $i }}
+{{end}}
