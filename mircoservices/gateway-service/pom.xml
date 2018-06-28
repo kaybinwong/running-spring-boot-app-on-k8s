@@ -106,7 +106,7 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>docker:build</phase>
+						<phase>package</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
