@@ -28,7 +28,7 @@ readinessProbe:
 
 global:
   kafka:
-    brokers: 192.168.64.134:9092 
+    brokers: 192.168.64.168:9092 
     zkNodes: 192.168.64.168:2181
   
   eureka:

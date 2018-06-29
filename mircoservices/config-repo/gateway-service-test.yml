@@ -5,7 +5,7 @@ spring:
       default-binder: kafka
       kafka:
         binder:
-          brokers: 192.168.64.134:9092
+          brokers: 192.168.64.168:9092
           zk-nodes: 192.168.64.168:2181
  
   sleuth:
