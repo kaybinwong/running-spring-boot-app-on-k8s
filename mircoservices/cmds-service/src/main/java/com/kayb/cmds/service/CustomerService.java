@@ -13,4 +13,6 @@ public interface CustomerService {
     Customer findCust(String mobile);
 
     List<Properties> findProperties(Long mobile);
+
+    Customer add(Customer customer);
 }

@@ -15,4 +15,10 @@ public class CmdsFallbackService implements CmdsService {
         log.error("feign fallback, {}", mobile);
         return null;
     }
+
+    @Override
+    public Customer add(Customer customer) {
+        // add to local message and retry
+        return null;
+    }
 }

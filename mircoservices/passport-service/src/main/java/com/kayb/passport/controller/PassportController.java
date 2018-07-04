@@ -4,8 +4,7 @@ import com.kayb.passport.dto.Customer;
 import com.kayb.passport.service.CmdsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author huangkaibin
@@ -20,13 +19,13 @@ public class PassportController {
     @Autowired
     private CmdsService ribbonService;
 
-    @GetMapping("/1.0.0/getUserByRibbon")
-    public Customer ribbonService(String mobile){
-        return ribbonService.getByMobile(mobile);
+    @PostMapping("/1.0.0/accounts")
+    public Customer ribbonService(@RequestBody Customer customer){
+        return feignService.add(customer);
     }
 
-    @GetMapping("/1.0.0/getUserByFeign")
-    public Customer feignService(String mobile){
+    @GetMapping("/1.0.0/accounts/{mobile}")
+    public Customer feignService(@PathVariable("mobile") String mobile){
         return feignService.getByMobile(mobile);
     }
 }

@@ -31,4 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
     public List<Properties> findProperties(Long custId) {
         return propertiesRepository.findByCustId(custId);
     }
+
+    @Override
+    public Customer add(Customer customer) {
+        return customerRepository.save(customer);
+    }
 }

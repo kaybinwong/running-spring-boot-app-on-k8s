@@ -5,6 +5,7 @@ import com.kayb.passport.service.CmdsService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,6 +31,11 @@ public class CmdsServiceImpl implements CmdsService {
             }
         }
         return restTemplate.getForObject("http://cmds-service/1.0.0/cust/getCustInfo?mobile=" + mobile, Customer.class);
+    }
+
+    @Override
+    public Customer add(Customer customer) {
+        return restTemplate.postForEntity("http://cmds-service/1.0.0/customers/", customer, Customer.class).getBody();
     }
 
     public Customer getByMobileByRibbonFallback(String mobile) {
