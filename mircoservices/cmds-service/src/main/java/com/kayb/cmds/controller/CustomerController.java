@@ -26,7 +26,7 @@ public class CustomerController {
 
     @GetMapping("/refresh")
     public String refresh() {
-        return profile;
+        return "test canary";
     }
 
     @PostMapping("/1.0.0/customers")

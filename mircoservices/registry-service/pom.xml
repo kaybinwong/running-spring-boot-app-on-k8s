@@ -94,14 +94,14 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>docker:build</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <target>
-                                <delete file="${project.basedir}/docker/app.jar"/>
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.basedir}/docker/app.jar" overwrite="true"/>
+                                <copy file="${project.basedir}/docker/Dockerfile" tofile="${project.build.directory}/docker/Dockerfile" overwrite="true"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/docker/app.jar" overwrite="true"/>
                             </target>
                         </configuration>
                     </execution>
@@ -118,8 +118,7 @@
                         <imageTag>latest</imageTag>
                     </imageTags>
                     <forceTags>true</forceTags>
-                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
-
+                    <dockerDirectory>${project.build.directory}</dockerDirectory>
                 </configuration>
             </plugin>
         </plugins>

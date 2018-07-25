@@ -1,0 +1,130 @@
+
+---
+# Source: registry-service/templates/deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: saucy-snake-registry-service-config-0
+  labels:
+    chart: registry-service-0.1.0
+    release: saucy-snake
+    heritage: Tiller
+data:
+  application.yaml: |+
+    server:
+      port: 8761
+    spring:
+      application:
+        name: eureka-server
+    eureka:
+      instance:
+        hostname: localhost
+        preferIpAddress: true
+      client:
+        registerWithEureka: false
+        fetchRegistry: false
+        service-url:
+          defaultZone: http://127.0.0.1:8761/eureka
+      server:
+        waitTimeInMsWhenSyncEmpty: 0
+    management:
+      endpoints:
+        web:
+          base-path: "/management"
+          exposure:
+            include: "*"
+          cors:
+            allowed-origins: "*"
+            allowed-methods: "*"
+---
+# Source: registry-service/templates/deployment.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: saucy-snake-registry-service-svc-0
+  labels:
+    app: eureka-headless-svc
+spec:
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: 
+  type: ClusterIP
+  selector:
+    appInstance: saucy-snake-registry-service-0
+    release: saucy-snake
+---
+# Source: registry-service/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: saucy-snake-registry-service-svc
+  labels:
+    app: registry-service
+    chart: registry-service-0.1.0
+    release: saucy-snake
+    heritage: Tiller
+spec:
+  type: NodePort
+  ports:
+    - port: 8761
+      targetPort: 8761
+      protocol: TCP
+      name: eureka-listening-port
+  selector:
+    app: saucy-snake-registry-service
+    release: saucy-snake
+---
+# Source: registry-service/templates/deployment.yaml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: saucy-snake-registry-service-0
+  labels:
+    app: saucy-snake-registry-service
+    appInstance: saucy-snake-registry-service-0
+    chart: registry-service-0.1.0
+    release: saucy-snake
+    heritage: Tiller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      appInstance: saucy-snake-registry-service-0
+  template:
+    metadata:
+      labels:
+        app: saucy-snake-registry-service
+        appInstance: saucy-snake-registry-service-0
+        release: saucy-snake
+    spec:
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+        - name: registry-service
+          image: "registry.cn-hangzhou.aliyuncs.com/kayb/registry-service:v0.0.2"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8761
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 300
+            timeoutSeconds: 60
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8761
+            initialDelaySeconds: 30
+            periodSeconds: 300
+            timeoutSeconds: 60
+          volumeMounts:
+          - name: eureka-server-config
+            mountPath: /config
+      volumes:
+        - name: eureka-server-config
+          configMap:
+            name: saucy-snake-registry-service-config-0

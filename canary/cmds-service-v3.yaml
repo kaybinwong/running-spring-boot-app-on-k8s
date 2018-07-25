@@ -1,0 +1,56 @@
+# if config changed, you must define it.
+---
+# Source: cmds-service/templates/service.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: cmds-service-0.0.3
+  labels:
+    chart: cmds-service-0.1.0
+    release: lolling-deer
+    heritage: Tiller
+    k8s-app: cmds-service
+    version: v0.0.3
+spec:
+  replicas:  1
+  revisionHistoryLimit: 
+  template:
+    metadata:
+      labels:
+        k8s-app: cmds-service
+        version: v0.0.3
+    spec:
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: cmds-service
+        image: registry.cn-hangzhou.aliyuncs.com/kayb/cmds-service:v0.0.3
+        imagePullPolicy: Always
+
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 300
+          timeoutSeconds: 60
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 300
+          timeoutSeconds: 60
+          successThreshold: 1
+          failureThreshold: 5
+
+        volumeMounts:
+        - mountPath: /config
+          name: config
+
+      volumes:
+      - name: config
+        configMap:
+          name: lolling-deer-cmds-service

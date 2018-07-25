@@ -22,6 +22,7 @@ public class Customer {
     @Column(nullable = false)
     private String name;
     private int age;
+    private String idCard = "";
 
     @Transient
     private List<Properties> properties = new ArrayList<>();

@@ -97,8 +97,8 @@
                         </goals>
                         <configuration>
                             <target>
-                                <delete file="${project.basedir}/docker/app.jar"/>
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.basedir}/docker/app.jar" overwrite="true"/>
+                                <copy file="${project.basedir}/docker/Dockerfile" tofile="${project.build.directory}/docker/Dockerfile" overwrite="true"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/docker/app.jar" overwrite="true"/>
                             </target>
                         </configuration>
                     </execution>
@@ -114,7 +114,8 @@
                         <imageTag>${maven.build.timestamp}</imageTag>
                         <imageTag>latest</imageTag>
                     </imageTags>
-                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                    <forceTags>true</forceTags>
+                    <dockerDirectory>${project.build.directory}</dockerDirectory>
                 </configuration>
             </plugin>
         </plugins>
