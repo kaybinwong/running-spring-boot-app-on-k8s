@@ -24,9 +24,7 @@
         <java.version>1.8</java.version>
         <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
         <!-- docker registry -->
-        <docker.registry>your-private-registry</docker.registry>
-        <!-- insecurity, test only -->
-        <docker.host>http://192.168.64.75:2375</docker.host>
+        <docker.registry>registry.cn-hangzhou.aliyuncs.com/kayb</docker.registry>
         <!-- none utc time-->
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
     </properties>
@@ -49,10 +47,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-config-server</artifactId>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bus-kafka</artifactId>
         </dependency>
+        -->
         <!-- spring bus end-->
 
         <dependency>
@@ -115,7 +115,6 @@
                         <imageTag>latest</imageTag>
                     </imageTags>
                     <dockerDirectory>${project.basedir}/docker</dockerDirectory>
-                    <dockerHost>${docker.host}</dockerHost>
                 </configuration>
             </plugin>
         </plugins>

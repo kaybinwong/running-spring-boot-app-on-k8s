@@ -16,14 +16,14 @@ spring:
 server:
   port: 9411
 
-zipkin:
-  storage:
-    elasticsearch:
-      cluster: elasticsearch
-      index-replicas: 1
-      passwoord: 123456
-      hosts: localhost:9200
-      index: zipkin
-      index-shards: 1
-      username: elastic
-    type: elasticsearch
+#zipkin:
+#  storage:
+#    elasticsearch:
+#      cluster: elasticsearch
+#      index-replicas: 1
+#      passwoord: 123456
+#      hosts: localhost:9200
+#      index: zipkin
+#      index-shards: 1
+#      username: elastic
+#    type: elasticsearch
