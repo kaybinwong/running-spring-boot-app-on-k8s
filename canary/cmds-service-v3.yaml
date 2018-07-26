@@ -26,14 +26,17 @@ spec:
       - name: cmds-service
         image: registry.cn-hangzhou.aliyuncs.com/kayb/cmds-service:v0.0.3
         imagePullPolicy: Always
-
+        resources:
+          requests:
+            cpu: 400m
+            memory: 1024Mi
         livenessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 300
-          timeoutSeconds: 60
+          timeoutSeconds: 120
           successThreshold: 1
           failureThreshold: 5
         readinessProbe:
@@ -42,7 +45,7 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 300
-          timeoutSeconds: 60
+          timeoutSeconds: 120
           successThreshold: 1
           failureThreshold: 5
 
